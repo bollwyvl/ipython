@@ -623,131 +623,41 @@ var IPython = (function (IPython) {
     };
 
 
-    Notebook.prototype.to_code = function (index) {
-        var i = this.index_or_selected(index);
-        if (this.is_valid_cell_index(i)) {
-            var source_element = this.get_cell_element(i);
-            var source_cell = source_element.data("cell");
-            if (!(source_cell instanceof IPython.CodeCell)) {
-                target_cell = this.insert_cell_below('code',i);
-                var text = source_cell.get_text();
-                if (text === source_cell.placeholder) {
-                    text = '';
-                }
-                target_cell.set_text(text);
-                // make this value the starting point, so that we can only undo
-                // to this state, instead of a blank cell
-                target_cell.code_mirror.clearHistory();
-                source_element.remove();
-                this.dirty = true;
-            };
-        };
-    };
+    Notebook.prototype.to_cell_type = function(index, cell_type) {
+        var source_element,
+            source_cell,
+            target_cell,
+            text,
+            i = this.index_or_selected(index);
+        if(!this.is_valid_cell_index(i)){ return; }
+        
+        source_element = this.get_cell_element(i);
+        source_cell = source_element.data('cell');
+        
+        if (source_cell.cell_type == cell_type){ return; }
 
-
-    Notebook.prototype.to_markdown = function (index) {
-        var i = this.index_or_selected(index);
-        if (this.is_valid_cell_index(i)) {
-            var source_element = this.get_cell_element(i);
-            var source_cell = source_element.data("cell");
-            if (!(source_cell instanceof IPython.MarkdownCell)) {
-                target_cell = this.insert_cell_below('markdown',i);
-                var text = source_cell.get_text();
-                if (text === source_cell.placeholder) {
-                    text = '';
-                };
-                // The edit must come before the set_text.
-                target_cell.edit();
-                target_cell.set_text(text);
-                // make this value the starting point, so that we can only undo
-                // to this state, instead of a blank cell
-                target_cell.code_mirror.clearHistory();
-                source_element.remove();
-                this.dirty = true;
-            };
-        };
-    };
-
-
-    Notebook.prototype.to_html = function (index) {
-        var i = this.index_or_selected(index);
-        if (this.is_valid_cell_index(i)) {
-            var source_element = this.get_cell_element(i);
-            var source_cell = source_element.data("cell");
-            var target_cell = null;
-            if (!(source_cell instanceof IPython.HTMLCell)) {
-                target_cell = this.insert_cell_below('html',i);
-                var text = source_cell.get_text();
-                if (text === source_cell.placeholder) {
-                    text = '';
-                };
-                // The edit must come before the set_text.
-                target_cell.edit();
-                target_cell.set_text(text);
-                // make this value the starting point, so that we can only undo
-                // to this state, instead of a blank cell
-                target_cell.code_mirror.clearHistory();
-                source_element.remove();
-                this.dirty = true;
-            };
-        };
-    };
-
-
-    Notebook.prototype.to_raw = function (index) {
-        var i = this.index_or_selected(index);
-        if (this.is_valid_cell_index(i)) {
-            var source_element = this.get_cell_element(i);
-            var source_cell = source_element.data("cell");
-            var target_cell = null;
-            if (!(source_cell instanceof IPython.RawCell)) {
-                target_cell = this.insert_cell_below('raw',i);
-                var text = source_cell.get_text();
-                if (text === source_cell.placeholder) {
-                    text = '';
-                };
-                // The edit must come before the set_text.
-                target_cell.edit();
-                target_cell.set_text(text);
-                // make this value the starting point, so that we can only undo
-                // to this state, instead of a blank cell
-                target_cell.code_mirror.clearHistory();
-                source_element.remove();
-                this.dirty = true;
-            };
-        };
-    };
-
-
-    Notebook.prototype.to_heading = function (index, level) {
-        level = level || 1;
-        var i = this.index_or_selected(index);
-        if (this.is_valid_cell_index(i)) {
-            var source_element = this.get_cell_element(i);
-            var source_cell = source_element.data("cell");
-            var target_cell = null;
-            if (source_cell instanceof IPython.HeadingCell) {
-                source_cell.set_level(level);
-            } else {
-                target_cell = this.insert_cell_below('heading',i);
-                var text = source_cell.get_text();
-                if (text === source_cell.placeholder) {
-                    text = '';
-                };
-                // The edit must come before the set_text.
-                target_cell.set_level(level);
-                target_cell.edit();
-                target_cell.set_text(text);
-                // make this value the starting point, so that we can only undo
-                // to this state, instead of a blank cell
-                target_cell.code_mirror.clearHistory();
-                source_element.remove();
-                this.dirty = true;
-            };
-            $([IPython.events]).trigger('selected_cell_type_changed.Notebook',
-                {'cell_type':'heading',level:level}
-            );
-        };
+        target_cell = this.insert_cell_below(cell_type, i);
+        
+        text = source_cell.get_text();
+        if (text === source_cell.placeholder) {
+            text = '';
+        }
+        
+        // peform custom post-transformation actions
+        target_cell.post_transform_actions(arguments);
+        
+        // The edit must come before the set_text.
+        target_cell.edit();
+        target_cell.set_text(text);
+        
+        // make this value the starting point, so that we can only undo
+        // to this state, instead of a blank cell
+        target_cell.code_mirror.clearHistory();
+        source_element.remove();
+        this.dirty = true;
+        
+        // perform final transformation actions
+        target_cell.final_transform_actions(arguments);
     };
 
 
@@ -1087,7 +997,7 @@ var IPython = (function (IPython) {
 
     Notebook.prototype.execute_all_cells = function () {
         this.execute_cell_range(0, this.ncells());
-        that.scroll_to_bottom();
+        this.scroll_to_bottom();
     };
 
     Notebook.prototype.execute_cell_range = function (start, end) {

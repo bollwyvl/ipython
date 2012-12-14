@@ -55,6 +55,7 @@ from .handlers import (LoginHandler, LogoutHandler,
 from .nbmanager import NotebookManager
 from .filenbmanager import FileNotebookManager
 from .clustermanager import ClusterManager
+import extensions
 
 from IPython.config.application import catch_config_error, boolean_flag
 from IPython.core.application import BaseIPythonApplication
@@ -75,6 +76,8 @@ from IPython.utils.traitlets import (
 )
 from IPython.utils import py3compat
 from IPython.utils.path import filefind
+
+extensions.initialize()
 
 #-----------------------------------------------------------------------------
 # Module globals
@@ -161,8 +164,8 @@ class NotebookWebApplication(web.Application):
         
         settings = dict(
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
-            static_path=ipython_app.static_file_path,
-            static_handler_class = FileFindHandler,
+            static_path=extensions.static_paths(ipython_app.static_file_path),
+            static_handler_class=FileFindHandler,
             cookie_secret=os.urandom(1024),
             login_url="%s/login"%(base_project_url.rstrip('/')),
             cookie_name='username-%s' % uuid.uuid4(),

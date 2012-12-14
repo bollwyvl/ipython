@@ -40,6 +40,8 @@ from IPython.lib.security import passwd_check
 from IPython.utils.jsonutil import date_default
 from IPython.utils.path import filefind
 
+import extensions
+
 try:
     from docutils.core import publish_string
 except ImportError:
@@ -297,6 +299,7 @@ class NamedNotebookHandler(AuthenticatedHandler):
             logged_in=self.logged_in,
             login_available=self.login_available,
             mathjax_url=self.application.ipython_app.mathjax_url,
+            extension_assets=extensions.assets()
         )
 
 

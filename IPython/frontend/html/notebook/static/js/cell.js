@@ -248,6 +248,20 @@ var IPython = (function (IPython) {
     };
 
     /**
+     * peform custom post-transformation actions
+     * @method post_transform_actions
+     * @param {arguments} - arguments from to_celltype 
+     **/
+    Cell.prototype.post_transform_actions = function(args) {};
+    
+    /**
+     * peform final post-transformation actions
+     * @method final_transform_actions
+     * @param {arguments} - arguments from to_celltype 
+     **/
+    Cell.prototype.final_transform_actions = function(args) {};
+    
+    /**
      * Try to autodetect cell highlight mode, or use selected mode
      * @methods _auto_highlight
      * @private
@@ -305,19 +319,29 @@ var IPython = (function (IPython) {
     };
 
     // needlessly private?
-    var _cell_types = {};
+    var cell_types = {};
+    
+    IPython.registered_celltypes = function(){
+        return cell_types; 
+    };
 
-    IPython.register_celltype = function(cell_type, cell_cls, construct){
-        if(construct === undefined){
-            construct = function(){
-                return new cell_cls();
+    IPython.register_celltype = function(cell_type, cell_cls, opts){
+        var label = cell_type.slice(0, 1).toUpperCase() + cell_type.slice(1), 
+            defs = {
+                construct: function(){return new cell_cls();},
+                buttons: [{value: cell_type, text: label}],
+                cell_cls: cell_cls,
+                cell_type: cell_type,
+                label: label,
             };
-        }
-        _cell_types[cell_type] = construct;
+        
+        opts = $.extend(defs, opts || {});
+        
+        cell_types[opts.cell_type] = opts;
     };
 
     IPython.create_cell = function(type, kernel){
-        return _cell_types[type](kernel);
+        return cell_types[type].construct(kernel);
     };
 
     IPython.Cell = Cell;

@@ -458,7 +458,13 @@ var IPython = (function (IPython) {
         this.cell_type = 'heading';
     };
 
-    IPython.register_celltype('heading', HeadingCell);
+    var heading_opts = {buttons: []};
+    
+    for(var i=1; i<9; i++){
+        heading_opts.buttons.push({value: "heading "+i, text: "Heading "+i});
+    }
+
+    IPython.register_celltype('heading', HeadingCell, heading_opts);
 
     HeadingCell.prototype = new TextCell();
 
@@ -523,6 +529,30 @@ var IPython = (function (IPython) {
             this.element.find("div.text_cell_render").show();
             this.rendered = true;
         };
+    };
+    
+    /**
+     * peform custom post-transformation actions
+     * @method post_transform_actions
+     * @param {arguments} - arguments from to_celltype 
+     **/
+    HeadingCell.prototype.post_transform_actions = function(args) {
+        this.set_level(+args[2]);
+    };
+    
+    /**
+     * peform final post-transformation actions
+     * @method final_transform_actions
+     * @param {arguments} - arguments from to_celltype 
+     **/
+    HeadingCell.prototype.final_transform_actions = function(args) {
+        $([IPython.events]).trigger(
+            'selected_cell_type_changed.Notebook',
+            {
+                cell_type: 'heading',
+                level: +args[2]
+            }
+        );
     };
 
     IPython.TextCell = TextCell;

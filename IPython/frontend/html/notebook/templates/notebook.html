@@ -19,6 +19,10 @@ window.mathjax_url = "{{mathjax_url}}";
 <link rel="stylesheet" href="{{ static_url("css/tooltip.css") }}" type="text/css" />
 <link rel="stylesheet" href="{{ static_url("css/renderedhtml.css") }}" type="text/css" />
 
+{% for asset in [asset for asset in extension_assets if asset.endswith(".css")] %}
+<link rel="stylesheet" href="{{ static_url(asset) }}" type="text/css" />
+{% end %}
+
 <link rel="stylesheet" href="{{ static_url("css/printnotebook.css") }}" type="text/css" media="print"/>
 
 {% end %}
@@ -222,5 +226,9 @@ data-notebook-id={{notebook_id}}
 <script src="{{ static_url("js/notebookmain.js") }}" type="text/javascript" charset="utf-8"></script>
 
 <script src="{{ static_url("js/contexthint.js") }}" charset="utf-8"></script>
+
+{% for asset in [asset for asset in extension_assets if asset.endswith(".js")] %}
+<script src="{{ static_url(asset) }}" type="text/javascript" charset="utf-8"></script>
+{% end %}
 
 {% end %}
