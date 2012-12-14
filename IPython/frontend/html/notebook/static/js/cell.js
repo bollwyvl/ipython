@@ -34,7 +34,7 @@ var IPython = (function (IPython) {
         this.element = null;
         this.metadata = {};
         // load this from metadata later ?
-        this.user_highlight == 'auto';
+        this.user_highlight = 'auto';
         this.create_element();
         if (this.element !== null) {
             this.element.data("cell", this);
@@ -302,6 +302,22 @@ var IPython = (function (IPython) {
         // fallback on default (python)
         var default_mode = this.default_mode || 'text/plain';
         this.code_mirror.setOption('mode', default_mode);
+    };
+
+    // needlessly private?
+    var _cell_types = {};
+
+    IPython.register_celltype = function(cell_type, cell_cls, construct){
+        if(construct === undefined){
+            construct = function(){
+                return new cell_cls();
+            };
+        }
+        _cell_types[cell_type] = construct;
+    };
+
+    IPython.create_cell = function(type, kernel){
+        return _cell_types[type](kernel);
     };
 
     IPython.Cell = Cell;

@@ -87,15 +87,15 @@ var IPython = (function (IPython) {
         $(document).keydown(function (event) {
             // console.log(event);
             if (that.read_only) return true;
-            
-            // Save (CTRL+S) or (AppleKey+S) 
+
+            // Save (CTRL+S) or (AppleKey+S)
             //metaKey = applekey on mac
-            if ((event.ctrlKey || event.metaKey) && event.keyCode==83) { 
+            if ((event.ctrlKey || event.metaKey) && event.keyCode==83) {
                 that.save_notebook();
                 event.preventDefault();
                 return false;
             } else if (event.which === key.ESC) {
-                // Intercept escape at highest level to avoid closing 
+                // Intercept escape at highest level to avoid closing
                 // websocket connection with firefox
                 event.preventDefault();
             } else if (event.which === key.SHIFT) {
@@ -288,7 +288,7 @@ var IPython = (function (IPython) {
             var app_height = $('div#main_app').height(); // content height
             var splitter_height = $('div#pager_splitter').outerHeight(true);
             var pager_height = $('div#pager').outerHeight(true);
-            var new_height = app_height - pager_height - splitter_height; 
+            var new_height = app_height - pager_height - splitter_height;
             that.element.animate({height : new_height + 'px'}, time);
         }
 
@@ -317,7 +317,7 @@ var IPython = (function (IPython) {
         var time = time || 0;
         cell_number = Math.min(cells.length-1,cell_number);
         cell_number = Math.max(0             ,cell_number);
-        scroll_value = cells[cell_number].element.position().top-cells[0].element.position().top ; 
+        scroll_value = cells[cell_number].element.position().top-cells[0].element.position().top ;
         this.element.animate({scrollTop:scroll_value}, time);
         return scroll_value;
     };
@@ -580,18 +580,7 @@ var IPython = (function (IPython) {
             this.undelete_index = this.undelete_index + 1;
         }
         if (this.ncells() === 0 || this.is_valid_cell_index(index)) {
-            if (type === 'code') {
-                cell = new IPython.CodeCell(this.kernel);
-                cell.set_input_prompt();
-            } else if (type === 'markdown') {
-                cell = new IPython.MarkdownCell();
-            } else if (type === 'html') {
-                cell = new IPython.HTMLCell();
-            } else if (type === 'raw') {
-                cell = new IPython.RawCell();
-            } else if (type === 'heading') {
-                cell = new IPython.HeadingCell();
-            };
+            cell = IPython.create_cell(type, this.kernel);
             if (cell !== null) {
                 if (this.ncells() === 0) {
                     this.element.find('div.end_space').before(cell.element);
@@ -617,18 +606,7 @@ var IPython = (function (IPython) {
             this.undelete_index = this.undelete_index + 1;
         }
         if (this.ncells() === 0 || this.is_valid_cell_index(index)) {
-            if (type === 'code') {
-                cell = new IPython.CodeCell(this.kernel);
-                cell.set_input_prompt();
-            } else if (type === 'markdown') {
-                cell = new IPython.MarkdownCell();
-            } else if (type === 'html') {
-                cell = new IPython.HTMLCell();
-            } else if (type === 'raw') {
-                cell = new IPython.RawCell();
-            } else if (type === 'heading') {
-                cell = new IPython.HeadingCell();
-            };
+            cell = IPython.create_cell(type, this.kernel);
             if (cell !== null) {
                 if (this.ncells() === 0) {
                     this.element.find('div.end_space').before(cell.element);
@@ -1173,7 +1151,7 @@ var IPython = (function (IPython) {
                 if (cell_data.cell_type === 'plaintext'){
                     cell_data.cell_type = 'raw';
                 }
-                
+
                 new_cell = this.insert_cell_below(cell_data.cell_type);
                 new_cell.fromJSON(cell_data);
             };
@@ -1309,7 +1287,7 @@ var IPython = (function (IPython) {
             msg = "This notebook is version " + orig_vs + ", but we only fully support up to " +
             this_vs + ".  You can still work with this notebook, but some features " +
             "introduced in later notebook versions may not be available."
-            
+
             var dialog = $('<div/>');
             dialog.html(msg);
             this.element.append(dialog);
@@ -1326,7 +1304,7 @@ var IPython = (function (IPython) {
                 },
                 width: 400
             });
-            
+
         }
         // Create the kernel after the notebook is completely loaded to prevent
         // code execution upon loading, which is a security risk.
@@ -1361,7 +1339,7 @@ var IPython = (function (IPython) {
             });
         }
     }
-    
+
     IPython.Notebook = Notebook;
 
 

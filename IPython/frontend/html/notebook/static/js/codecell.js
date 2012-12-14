@@ -48,6 +48,11 @@ var IPython = (function (IPython) {
         );
     };
 
+    IPython.register_celltype("code", CodeCell, function(kernel){
+        var cell = new CodeCell(kernel);
+        cell.set_input_prompt();
+        return cell;
+    });
 
     CodeCell.prototype = new IPython.Cell();
 

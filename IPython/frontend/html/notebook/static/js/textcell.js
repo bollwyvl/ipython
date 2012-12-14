@@ -268,6 +268,8 @@ var IPython = (function (IPython) {
         this.cell_type = 'html';
     };
 
+    IPython.register_celltype("html", HTMLCell);
+
 
     HTMLCell.prototype = new TextCell();
 
@@ -297,6 +299,8 @@ var IPython = (function (IPython) {
         IPython.TextCell.apply(this, arguments);
         this.cell_type = 'markdown';
     };
+
+    IPython.register_celltype('markdown', MarkdownCell);
 
 
     MarkdownCell.prototype = new TextCell();
@@ -358,6 +362,8 @@ var IPython = (function (IPython) {
                 function() { that.auto_highlight(); }
             );
     };
+
+    IPython.register_celltype('raw', RawCell);
 
 
     RawCell.prototype = new TextCell();
@@ -452,6 +458,7 @@ var IPython = (function (IPython) {
         this.cell_type = 'heading';
     };
 
+    IPython.register_celltype('heading', HeadingCell);
 
     HeadingCell.prototype = new TextCell();
 
