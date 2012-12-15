@@ -12,7 +12,7 @@ exec open('blockly/version.py')
 with open('README.md') as f:
     readme = f.read()
 
-with open('LICENSE') as f:
+with open('COPYING') as f:
     license = f.read()
 
 setup(
@@ -25,10 +25,5 @@ setup(
     url='https://github.com/bollwyvl/ipython-blockly',
     license=license,
     packages=find_packages(exclude=('tests', 'docs')),
-    include_package_data=True,
-    entry_points={
-        'ipnotebook': [
-            'blockly = blockly:BlocklyNotebookExtension'
-        ]
-    }
+    include_package_data=True
 )
