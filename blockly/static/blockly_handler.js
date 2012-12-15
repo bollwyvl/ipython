@@ -1,7 +1,8 @@
 ;(function(){
     function blockly_handler(json, element){
-        debugger
+        element.append($("<img/>", {
+            src: "http://blockly.googlecode.com/svn/wiki/sample.png"
+        }));
     }
     IPython.json_handlers.register_handler('blockly', blockly_handler);
-    console.log("loaded blockly handler")
 })();
