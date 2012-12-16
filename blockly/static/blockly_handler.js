@@ -19,18 +19,19 @@ function blockly_handler(json, element){
         // ids are good... private scope enough?
         // the workspace div... doesn't get used much, actually...
     
-    create_workspace(cell, element);
+    create_workspace(cell, element, json);
 }
 
 function get_workspace(cell){
     return workspaces[cell.cell_id];
 }
 
-function create_workspace(cell, element){
+function create_workspace(cell, element, json){
     // returns an iframe
     var workspace_div = $("<div/>")
-        .attr('id', IPython.utils.uuid())
-        .css("overflow", "hidden");
+        .attr("id", IPython.utils.uuid())
+        .css("overflow", "hidden")
+        .css("height", (json.height || 500) + "px");
         
     element.append(workspace_div);
     
@@ -121,13 +122,10 @@ function get_output_cell(cell){
         // where to put the generated code, for now
         output_cell;
 
-
-
     // gotta put this code someplace...
     if(cell.at_bottom() ||                              // but not off the end
         !(cells[cell_idx+1] instanceof IPython.CodeCell) ||   // but only code
-        cells[cell_idx+1].get_text()        // and only if it belongs to blkly
-            .slice(0, BLOCKLY_DELIM.length) !== BLOCKLY_DELIM
+        cells[cell_idx+1].get_text().indexOf(BLOCKLY_DELIM) // and only if it belongs to blkly
     ){
         output_cell = IPython.notebook.insert_cell_below("code", cell_idx);
     }else{
@@ -162,6 +160,7 @@ function on_workspace_change(cell, workspace){
         output_cell.set_text(
             BLOCKLY_DELIM +
             workspace.Blockly.Generator.workspaceToCode('Python')
+                .trim()
         );
     };
 }

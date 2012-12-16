@@ -8,12 +8,17 @@ from zmq.utils import jsonapi
 _loaded = False
 
 class Blockly(object):
-    pass
-
-def blockly_to_json(B):
-    d = {}
-    d['handler'] = 'blockly'
-    return jsonapi.dumps(d)
+    def __init__(self, height=500):
+        self.height = height
+        
+    def __repr__json__(self):
+        """
+        would this be called anyway without adding the handler?
+        """
+        return jsonapi.dumps(dict(
+            handler = "blockly",
+            height = self.height
+        ))
 
 def copy_assets(ip):
     opj = os.path.join
@@ -57,12 +62,7 @@ def copy_assets(ip):
         for root, dirnames, filenames in os.walk(opj(*src)):
             for filename in fnmatch.filter(filenames, what):
                 shutil.copy(opj(root, filename), where)
-        
-    #
-    #shutil.copytree(blockly_static, profile_static)
 
-
-    #print(" ".join(["copied", blockly_static, "to", profile_static]))
     print "If this is the first time you have used ipython-blockly, or you are a developer and have added/deleted assets files, you must restart your notebook web application... not just reload the page! %s" % time.time()
 
 def load_ipython_extension(ip):
@@ -74,7 +74,7 @@ def load_ipython_extension(ip):
         json_formatter = ip.display_formatter.formatters['application/json']
 
         json_formatter.for_type_by_name(
-            __name__, Blockly.__name__, blockly_to_json
+            __name__, Blockly.__name__, lambda blkly: blkly.__repr__json__()
         )
         _loaded = True
         
