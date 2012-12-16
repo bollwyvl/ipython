@@ -29,8 +29,9 @@ function get_workspace(cell){
 function create_workspace(cell, element){
     // returns an iframe
     var workspace_div = $("<div/>")
-        .attr('id', IPython.utils.uuid());
-    
+        .attr('id', IPython.utils.uuid())
+        .css("overflow", "hidden");
+        
     element.append(workspace_div);
     
     new_blockly_iframe(cell, workspace_div);
@@ -83,7 +84,10 @@ function register_workspace(frame_window, blockly){
 }
 
 function new_blockly_iframe(cell, parent_div){
-    var iframe = $('<iframe src="/static/jsplugins/blockly/frame.html?cell_id=' + cell.cell_id + '"></iframe>');
+    var iframe = $("<iframe/>", {
+            src:'/static/jsplugins/blockly/frame.html?cell_id=' + cell.cell_id,
+            style: "width: 100%; height: 100%;"
+        });
     
     parent_div.append(iframe);
 }
