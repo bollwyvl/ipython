@@ -123,9 +123,9 @@ function get_output_cell(cell){
         output_cell;
 
     // gotta put this code someplace...
-    if(cell.at_bottom() ||                              // but not off the end
-        !(cells[cell_idx+1] instanceof IPython.CodeCell) ||   // but only code
-        cells[cell_idx+1].get_text().indexOf(BLOCKLY_DELIM) // and only if it belongs to blkly
+    if(cell_idx + 1 == cells.length || // but not off the end
+        !(cells[cell_idx + 1] instanceof IPython.CodeCell) || // but only code
+        cells[cell_idx + 1].get_text().indexOf(BLOCKLY_DELIM) // and only if it belongs to blkly
     ){
         output_cell = IPython.notebook.insert_cell_below("code", cell_idx);
     }else{
