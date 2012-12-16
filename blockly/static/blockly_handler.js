@@ -16,21 +16,20 @@ function blockly_handler(json, element){
         // ids are good... private scope enough?
         id = 'blockly-' + IPython.utils.uuid(),
         // the workspace div... doesn't get used much, actually...
-        workspace = $("<div/>").attr('id', id);
+        workspace_div = $("<div/>")
+            .attr('id', id);
 
 
     // attach the workspace
-    element.append(workspace);
+    element.append(workspace_div);
 
     // the magic blockly thing... at least it's not using the iframe stuff
-    Blockly.inject(workspace[0], {path: '/static/jsplugins/blockly/'});
+    Blockly.inject(workspace_div[0], {path: '/static/jsplugins/blockly/'});
 
-    console.log(cell.metadata.blockly);
     if(cell.metadata.blockly === undefined){
         cell.metadata.blockly = {xml: "<xml></xml>"};
     }
-    console.log(cell.metadata.blockly);
-
+    
     Blockly.Xml.domToWorkspace(Blockly.mainWorkspace,
         Blockly.Xml.textToDom(cell.metadata.blockly.xml)
     );

@@ -1,6 +1,7 @@
 import os
 import shutil
 import fnmatch
+import time
 
 from zmq.utils import jsonapi
 
@@ -62,7 +63,7 @@ def copy_assets(ip):
 
 
     #print(" ".join(["copied", blockly_static, "to", profile_static]))
-    print "If this is the first time you have used blockly, or you are a developer and have added/deleted assets files, you must restart your notebook web application... not just reload the page!"
+    print "If this is the first time you have used ipython-blockly, or you are a developer and have added/deleted assets files, you must restart your notebook web application... not just reload the page! %s" % time.time()
 
 def load_ipython_extension(ip):
     """Load the extension in IPython."""
