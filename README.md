@@ -47,17 +47,12 @@ blocks around, it will fill the cell below it with the generated text... and
 slowly get longer. Not sure what that is about.
 
 # Known Limitations
-- I didn't even test it with multiple blockly cells on one page.
-- The above-mentioned growing cell thing
 - It doesn't know anything about the variables you already have, and always
     initializes new variables to `None`
-- A bunch of assets don't load... might be a thing with the notebook server 
-    though
 - Probably a ton of other things
 
 # Roadmap
 - test suite
-- look at multiple Blockly cells on a page
 - maybe not have each cell generate another cell
 - side-by-side cells?
 - auto execution?
