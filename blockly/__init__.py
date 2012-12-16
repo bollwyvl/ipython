@@ -25,19 +25,17 @@ def copy_assets(ip):
     assets = {
         (module_root, "static"): (
             "*",
-                static_dest),
+                opj(static_dest, "XXX")),
         (blkly_root, "demos"): (
             "blockly_compressed.js",
                 blkly_dest),
+        # OOH, you terrible beast. the XXX makes it load later.
         (blkly_root, "language", "common"): (
             "*",
-                opj(blkly_dest, "language", "common")),
+                opj(blkly_dest, "language", "XXXcommon")),
         (blkly_root, "language", "en"): (
             "*",
                 opj(blkly_dest, "language", "en")),
-        (blkly_root, "language", "common"): (
-            "*",
-                opj(blkly_dest, "language", "common")),
         (blkly_root, "generators"): (
             "python.js",
                 opj(blkly_dest, "generators")),
