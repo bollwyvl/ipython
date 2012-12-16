@@ -13,8 +13,6 @@ function blockly_handler(json, element){
     // need the cell DOM element first... not sure if i can trust
     // get_selected_cell...
     var cell = get_cell_from_target(element),
-        // where to put the generated code... forces creation?
-        output_cell = get_output_cell(cell),
         // ids are good... private scope enough?
         id = 'blockly-' + IPython.utils.uuid(),
         // the workspace div... doesn't get used much, actually...
@@ -27,8 +25,16 @@ function blockly_handler(json, element){
     // the magic blockly thing... at least it's not using the iframe stuff
     Blockly.inject(workspace[0], {path: '/static/jsplugins/blockly/'});
 
-    // TODO: not this
-    load_sample_data();
+    console.log(cell.metadata.blockly);
+    if(cell.metadata.blockly === undefined){
+        cell.metadata.blockly = {xml: "<xml></xml>"};
+    }
+    console.log(cell.metadata.blockly);
+
+    Blockly.Xml.domToWorkspace(Blockly.mainWorkspace,
+        Blockly.Xml.textToDom(cell.metadata.blockly.xml)
+    );
+    
 
     // every time you move a block, update the generated code in the
     // output_cell
@@ -37,7 +43,6 @@ function blockly_handler(json, element){
         'blocklyWorkspaceChange',
         null,
         on_workspace_change(cell));
-
 }
 
 function get_cell_from_target(element){
@@ -94,7 +99,21 @@ function on_workspace_change(cell){
     return function(){
         // getting the output every time, as we have no idea what will
         // happen as people start dinking with stuff
-        get_output_cell(cell).set_text(
+        
+        var output_cell = get_output_cell(cell);
+
+
+        if(cell.metadata.blockly === undefined){
+           cell.metadata.blockly = {}; 
+        }
+        
+        var xml = Blockly.Xml.domToText(
+            Blockly.Xml.workspaceToDom(
+                Blockly.mainWorkspace));
+        
+        cell.metadata.blockly.xml = xml;
+        
+        output_cell.set_text(
             BLOCKLY_DELIM +
             Blockly.Generator.workspaceToCode('Python')
         );
