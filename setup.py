@@ -245,7 +245,7 @@ if 'setuptools' in sys.modules:
             # Pyreadline 64 bit windows issue solved in versions >=1.7.1
             # Also solves issues with some older versions of pyreadline that
             # satisfy the unconstrained depdendency.
-            requires.append('pyreadline>=1.7.1')
+            requires.append('pyreadline>=1.7.1,==1.7.1.dev-r0')
         else:
             pass
             # do we want to install readline here?
