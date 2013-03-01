@@ -13,3 +13,4 @@ build
 *~
 *.bak
 .tox
+.webassets-cache
