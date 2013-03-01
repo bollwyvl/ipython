@@ -20,7 +20,17 @@ def make_app(ip_app, **handlers):
     register_assets(assets)
 
     # views ###################################################################
-    @app.route('/<notebook_id>')
+    @app.route('/', methods=['GET'])
+    def dashboard():
+        ctxt = base_ctxt(handlers["dashboard"])
+        
+        ctxt.update(dict(
+            project_component=ctxt["project"].split('/'),
+        ))
+        
+        return render_template('projectdashboard.html', **ctxt)
+    
+    @app.route('/<notebook_id>', methods=['GET'])
     def notebook(notebook_id):
         """
         serves up the randomly-renamed notebook
@@ -36,6 +46,7 @@ def make_app(ip_app, **handlers):
         ))
 
         return render_template('notebook.html', **ctxt)
+
 
     # helpers #################################################################
     def base_ctxt(handler):

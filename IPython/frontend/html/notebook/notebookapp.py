@@ -132,12 +132,13 @@ class NotebookWebApplication(web.Application):
     def __init__(self, ipython_app, kernel_manager, notebook_manager,
                  cluster_manager, log,
                  base_project_url, settings_overrides):
-        flask_app = wsgi.WSGIContainer(make_app(self, 
-          notebook=NamedNotebookHandler,
+        flask_app = wsgi.WSGIContainer(make_app(self,
+            dashboard=ProjectDashboardHandler,
+            notebook=NamedNotebookHandler,
         ))
         
         handlers = [
-            (r"/", ProjectDashboardHandler),
+            #(r"/", ProjectDashboardHandler),
             (r"/login", LoginHandler),
             (r"/logout", LogoutHandler),
             (r"/new", NewHandler),
