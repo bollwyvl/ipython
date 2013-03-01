@@ -42,6 +42,7 @@ ioloop.install()
 
 from tornado import httpserver
 from tornado import web
+from tornado import wsgi
 
 # Our own libraries
 from .kernelmanager import MappingKernelManager
@@ -77,6 +78,8 @@ from IPython.utils.traitlets import (
 )
 from IPython.utils import py3compat
 from IPython.utils.path import filefind
+
+from flask_app import make_app
 
 #-----------------------------------------------------------------------------
 # Module globals
@@ -134,7 +137,7 @@ class NotebookWebApplication(web.Application):
             (r"/login", LoginHandler),
             (r"/logout", LogoutHandler),
             (r"/new", NewHandler),
-            (r"/%s" % _notebook_id_regex, NamedNotebookHandler),
+            #(r"/%s" % _notebook_id_regex, NamedNotebookHandler),
             (r"/%s/copy" % _notebook_id_regex, NotebookCopyHandler),
             (r"/%s/print" % _notebook_id_regex, PrintNotebookHandler),
             (r"/kernels", MainKernelHandler),
@@ -149,6 +152,9 @@ class NotebookWebApplication(web.Application):
             (r"/clusters", MainClusterHandler),
             (r"/clusters/%s/%s" % (_profile_regex, _cluster_action_regex), ClusterActionHandler),
             (r"/clusters/%s" % _profile_regex, ClusterProfileHandler),
+            (r"/%s" % _notebook_id_regex, web.FallbackHandler, dict(
+              fallback=wsgi.WSGIContainer(make_app(self, NamedNotebookHandler))
+            )),
         ]
 
         # Python < 2.6.5 doesn't accept unicode keys in f(**kwargs), and
