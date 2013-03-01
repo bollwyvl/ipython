@@ -2,6 +2,7 @@
 
 {% import "macros.html" as m %}
 
+
 {% block stylesheet %}
   {% assets "notebook_css" %}
     <link rel="stylesheet" href="{{ ASSET_URL }}" type="text/css">
@@ -33,11 +34,11 @@
 
 
 {% block params %}
-  data-project={{project}}
-  data-base-project-url={{base_project_url}}
-  data-base-kernel-url={{base_kernel_url}}
-  data-read-only={{read_only and not logged_in}}
-  data-notebook-id={{notebook_id}}
+  data-project="{{ project }}"
+  data-base-project-url="{{ base_project_url }}"
+  data-base-kernel-url="{{ base_kernel_url }}"
+  data-read-only="{{ read_only and not logged_in }}"
+  data-notebook-id="{{ notebook_id }}"
   class="notebook_app"
 {% endblock %}
 
