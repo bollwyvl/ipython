@@ -1,5 +1,6 @@
 {% extends "page.html" %}
 
+{% import "macros.html" as m %}
 
 {% block stylesheet %}
   {% if mathjax_url %}
@@ -21,6 +22,16 @@
 
   {{ super() }}
 {% endblock stylesheet %}
+
+
+{% block script %}
+  {{ super() }}
+
+  {% assets "notebook_js" %}
+      <script src="{{ ASSET_URL }}"  type="text/javascript" charset="utf-8">
+        </script>
+  {% endassets %}
+{% endblock script %}
 
 
 {% block params %}
@@ -47,21 +58,21 @@
       <ul id="menus">
         <li><a href="#">File</a>
           <ul>
-            <li id="new_notebook"><a href="#">New</a></li>
-            <li id="open_notebook"><a href="#">Open...</a></li>
+            {{ m.item("new_notebook", "New") }}
+            {{ m.item("open_notebook", "Open...") }}
           
             <hr/>
           
-            <li id="copy_notebook"><a href="#">Make a Copy...</a></li>
-            <li id="rename_notebook"><a href="#">Rename...</a></li>
-            <li id="save_notebook"><a href="#">Save</a></li>
+            {{ m.item("copy_notebook", "Make a Copy...") }}
+            {{ m.item("rename_notebook", "Rename...") }}
+            {{ m.item("save_notebook", "Save") }}
           
             <hr/>
           
             <li><a href="#">Download as</a>
               <ul>
-                <li id="download_ipynb"><a href="#">IPython (.ipynb)</a></li>
-                <li id="download_py"><a href="#">Python (.py)</a></li>
+                {{ m.item("download_ipynb", "IPython (.ipynb)") }}
+                {{ m.item("download_py", "Python (.py)") }}
               </ul>
             </li>
             <!--
@@ -71,81 +82,82 @@
           
             <hr/>
           
-            <li id="kill_and_exit"><a href="#" >Close and halt</a></li>
+            {{ m.item("kill_and_exit", "Close and halt") }}
           </ul>
         </li>
       
         <li><a href="#">Edit</a>
           <ul>
-            <li id="cut_cell"><a href="#">Cut Cell</a></li>
-            <li id="copy_cell"><a href="#">Copy Cell</a></li>
-            <li id="paste_cell_above" class="ui-state-disabled"><a href="#">Paste Cell Above</a></li>
-            <li id="paste_cell_below" class="ui-state-disabled"><a href="#">Paste Cell Below</a></li>
-            <li id="paste_cell_replace" class="ui-state-disabled"><a href="#">Paste Cell &amp; Replace</a></li>
-            <li id="delete_cell"><a href="#">Delete Cell</a></li>
-            <li id="undelete_cell" class="ui-state-disabled"><a href="#">Undo Delete Cell</a></li>
+            {{ m.item("cut_cell", "Cut Cell") }}
+            {{ m.item("copy_cell", "Copy Cell") }}
+            {{ m.item("paste_cell_above", "Paste Cell Above", 0) }}
+            {{ m.item("paste_cell_below", "Paste Cell Below", 0) }}
+            {{ m.item("paste_cell_replace", "Paste Cell &amp; Replace", 0) }}
+            
+            {{ m.item("delete_cell", "Delete Cell") }}
+            {{ m.item("undelete_cell", "Undo Delete Cell", 0) }}
           
             <hr/>
             
-            <li id="split_cell"><a href="#">Split Cell</a></li>
-            <li id="merge_cell_above"><a href="#">Merge Cell Above</a></li>
-            <li id="merge_cell_below"><a href="#">Merge Cell Below</a></li>
+            {{ m.item("split_cell", "Split Cell") }}
+            {{ m.item("merge_cell_above", "Merge Cell Above") }}
+            {{ m.item("merge_cell_below", "Merge Cell Below") }}
           
             <hr/>
           
-            <li id="move_cell_up"><a href="#">Move Cell Up</a></li>
-            <li id="move_cell_down"><a href="#">Move Cell Down</a></li>
+            {{ m.item("move_cell_up", "Move Cell Up") }}
+            {{ m.item("move_cell_down", "Move Cell Down") }}
           
             <hr/>
           
-            <li id="select_previous"><a href="#">Select Previous Cell</a></li>
-            <li id="select_next"><a href="#">Select Next Cell</a></li>
+            {{ m.item("select_previous", "Select Previous Cell") }}
+            {{ m.item("select_next", "Select Next Cell") }}
           </ul>
         </li>
       
         <li><a href="#">View</a>
           <ul>
-            <li id="toggle_header"><a href="#">Toggle Header</a></li>
-            <li id="toggle_toolbar"><a href="#">Toggle Toolbar</a></li>
+            {{ m.item("toggle_header", "Toggle Header") }}
+            {{ m.item("toggle_toolbar", "Toggle Toolbar") }}
           </ul>
         </li>
       
         <li><a href="#">Insert</a>
           <ul>
-            <li id="insert_cell_above"><a href="#">Insert Cell Above</a></li>
-            <li id="insert_cell_below"><a href="#">Insert Cell Below</a></li>
+            {{ m.item("insert_cell_above", "Insert Cell Above") }}
+            {{ m.item("insert_cell_below", "Insert Cell Below") }}
           </ul>
         </li>
       
         <li><a href="#">Cell</a>
           <ul>
-            <li id="run_cell"><a href="#">Run</a></li>
-            <li id="run_cell_in_place"><a href="#">Run in Place</a></li>
-            <li id="run_all_cells"><a href="#">Run All</a></li>
-            <li id="run_all_cells_above"><a href="#">Run All Above</a></li>
-            <li id="run_all_cells_below"><a href="#">Run All Below</a></li>
+            {{ m.item("run_cell", "Run") }}
+            {{ m.item("run_cell_in_place", "Run in Place") }}
+            {{ m.item("run_all_cells", "Run All") }}
+            {{ m.item("run_all_cells_above", "Run All Above") }}
+            {{ m.item("run_all_cells_below", "Run All Below") }}
           
             <hr/>
           
-            <li id="to_code"><a href="#">Code</a></li>
-            <li id="to_markdown"><a href="#">Markdown </a></li>
-            <li id="to_raw"><a href="#">Raw Text</a></li>
-            <li id="to_heading1"><a href="#">Heading 1</a></li>
-            <li id="to_heading2"><a href="#">Heading 2</a></li>
-            <li id="to_heading3"><a href="#">Heading 3</a></li>
-            <li id="to_heading4"><a href="#">Heading 4</a></li>
-            <li id="to_heading5"><a href="#">Heading 5</a></li>
-            <li id="to_heading6"><a href="#">Heading 6</a></li>
+            {{ m.item("to_code", "Code") }}
+            {{ m.item("to_markdown", "Markdown ") }}
+            {{ m.item("to_raw", "Raw Text") }}
+            {{ m.item("to_heading1", "Heading 1") }}
+            {{ m.item("to_heading2", "Heading 2") }}
+            {{ m.item("to_heading3", "Heading 3") }}
+            {{ m.item("to_heading4", "Heading 4") }}
+            {{ m.item("to_heading5", "Heading 5") }}
+            {{ m.item("to_heading6", "Heading 6") }}
           
             <hr/>
           
-            <li id="toggle_output"><a href="#">Toggle Current Output</a></li>
+            {{ m.item("toggle_output", "Toggle Current Output") }}
             <li id="all_outputs"><a href="#">All Output</a>
               <ul>
-                <li id="expand_all_output"><a href="#">Expand</a></li>
-                <li id="scroll_all_output"><a href="#">Scroll Long</a></li>
-                <li id="collapse_all_output"><a href="#">Collapse</a></li>
-                <li id="clear_all_output"><a href="#">Clear</a></li>
+                {{ m.item("expand_all_output", "Expand") }}
+                {{ m.item("scroll_all_output", "Scroll Long") }}
+                {{ m.item("collapse_all_output", "Collapse") }}
+                {{ m.item("clear_all_output", "Clear") }}
               </ul>
             </li>
           </ul>
@@ -153,23 +165,26 @@
       
         <li><a href="#">Kernel</a>
           <ul>
-            <li id="int_kernel"><a href="#">Interrupt</a></li>
-            <li id="restart_kernel"><a href="#">Restart</a></li>
+            {{ m.item("int_kernel", "Interrupt") }}
+            {{ m.item("restart_kernel", "Restart") }}
           </ul>
         </li>
       
         <li><a href="#">Help</a>
           <ul>
-            <li><a href="http://ipython.org/documentation.html" target="_blank">IPython Help</a></li>
-            <li><a href="http://ipython.org/ipython-doc/stable/interactive/htmlnotebook.html" target="_blank">Notebook Help</a></li>
-            <li id="keyboard_shortcuts"><a href="#">Keyboard Shortcuts</a></li>
+            {{ m.ext("ipython.org/documentation.html", "IPython Help") }}
+            
+            {{ m.ext("ipython.org/ipython-doc/stable/interactive/htmlnotebook.html", "Notebook Help") }}
+            
+            {{ m.item("keyboard_shortcuts", "Keyboard Shortcuts") }}
           
             <hr/>
-              <li><a href="http://docs.python.org" target="_blank">Python</a></li>
-              <li><a href="http://docs.scipy.org/doc/numpy/reference/" target="_blank">NumPy</a></li>
-              <li><a href="http://docs.scipy.org/doc/scipy/reference/" target="_blank">SciPy</a></li>
-              <li><a href="http://docs.sympy.org/dev/index.html" target="_blank">SymPy</a></li>
-              <li><a href="http://matplotlib.sourceforge.net/" target="_blank">Matplotlib</a></li>
+            
+            {{ m.ext("docs.python.org", "Python") }}
+            {{ m.ext("docs.scipy.org/doc/numpy/reference", "NumPy") }}
+            {{ m.ext("docs.scipy.org/doc/scipy/reference", "SciPy") }}
+            {{ m.ext("docs.sympy.org/dev", "SymPy") }}
+            {{ m.ext("matplotlib.sourceforge.net", "Matplotlib") }}
           </ul>
         </li>
       </ul>
@@ -192,13 +207,3 @@
 
   <div id="tooltip" class="ipython_tooltip" style="display: none;"></div>
 {% endblock site %}
-
-
-{% block script %}
-  {{ super() }}
-
-  {% assets "notebook_js" %}
-      <script src="{{ ASSET_URL }}"  type="text/javascript" charset="utf-8">
-        </script>
-  {% endassets %}
-{% endblock script %}

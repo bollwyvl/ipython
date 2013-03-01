@@ -1,0 +1,7 @@
+{% macro item(id, label, enabled=true) -%}
+<li id="{{ id }}"{% if not enabled %} class="ui-state-disabled"{% endif %}><a href="#">{{ label }}</a></li>
+{%- endmacro %}
+
+{% macro ext(url, label) -%}
+<li><a href="http://{{ url }}" target="_blank">{{ label }}</a></li>
+{%- endmacro %}
