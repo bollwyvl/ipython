@@ -132,6 +132,10 @@ class NotebookWebApplication(web.Application):
     def __init__(self, ipython_app, kernel_manager, notebook_manager,
                  cluster_manager, log,
                  base_project_url, settings_overrides):
+        flask_app = wsgi.WSGIContainer(make_app(self, 
+          notebook=NamedNotebookHandler,
+        ))
+        
         handlers = [
             (r"/", ProjectDashboardHandler),
             (r"/login", LoginHandler),
@@ -152,8 +156,10 @@ class NotebookWebApplication(web.Application):
             (r"/clusters", MainClusterHandler),
             (r"/clusters/%s/%s" % (_profile_regex, _cluster_action_regex), ClusterActionHandler),
             (r"/clusters/%s" % _profile_regex, ClusterProfileHandler),
-            (r"/%s" % _notebook_id_regex, web.FallbackHandler, dict(
-              fallback=wsgi.WSGIContainer(make_app(self, NamedNotebookHandler))
+
+            # handle HTML serving with Flask
+            (r".*", web.FallbackHandler, dict(
+              fallback=flask_app
             )),
         ]
 
