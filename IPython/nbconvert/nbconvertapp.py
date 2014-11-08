@@ -23,9 +23,12 @@ from IPython.utils.traitlets import (
 from IPython.utils.importstring import import_item
 
 from .exporters.export import get_export_names, exporter_map
+from .importers._import import get_import_names, importer_map
 from IPython.nbconvert import exporters, preprocessors, writers, postprocessors
 from .utils.base import NbConvertBase
 from .utils.exceptions import ConversionException
+
+from IPython import nbformat
 
 #-----------------------------------------------------------------------------
 #Classes and functions
@@ -48,6 +51,7 @@ nbconvert_aliases = {}
 nbconvert_aliases.update(base_aliases)
 nbconvert_aliases.update({
     'to' : 'NbConvertApp.export_format',
+    'from' : 'NbConvertApp.import_format',
     'template' : 'TemplateExporter.template_file',
     'writer' : 'NbConvertApp.writer_class',
     'post': 'NbConvertApp.postprocessor_class',
@@ -71,7 +75,7 @@ nbconvert_flags.update({
 
 
 class NbConvertApp(BaseIPythonApplication):
-    """Application used to convert from notebook file type (``*.ipynb``)"""
+    """Application used to convert from/to notebook file type (``*.ipynb``)"""
 
     name = 'ipython-nbconvert'
     aliases = nbconvert_aliases
@@ -184,6 +188,10 @@ class NbConvertApp(BaseIPythonApplication):
         config=True,
         help="""The export format to be used."""
     )
+    import_format = CaselessStrEnum(get_import_names(),
+        config=True,
+        help="""The import format to be used."""
+    )
 
     notebooks = List([], config=True, help="""List of notebooks to convert.
                      Wildcards are supported.
@@ -229,10 +237,13 @@ class NbConvertApp(BaseIPythonApplication):
             # notebooks without having to type the extension.
             globbed_files = glob.glob(pattern)
             globbed_files.extend(glob.glob(pattern + '.ipynb'))
+            
             if not globbed_files:
                 self.log.warn("pattern %r matched no files", pattern)
 
             for filename in globbed_files:
+                if filename.endswith(".ipynb.ipynb"):
+                    continue
                 if not filename in filenames:
                     filenames.append(filename)
         self.notebooks = filenames
@@ -274,11 +285,36 @@ class NbConvertApp(BaseIPythonApplication):
             """)
             self.exit(1)
         
+        importer = importer_map[self.import_format](config=self.config)
         exporter = exporter_map[self.export_format](config=self.config)
 
         for notebook_filename in self.notebooks:
-            self.log.info("Converting notebook %s to %s", notebook_filename, self.export_format)
-
+            self.log.info("Converting %s %s to %s",
+                self.import_format, notebook_filename, self.export_format
+            )
+            
+            if self.import_format:
+                import_filename = notebook_filename
+                notebook_filename = import_filename + ".ipynb"
+                resources = {}
+                # Try to import
+                try:
+                    nb, resources = importer.from_filename(import_filename, resources=resources)
+                except ConversionException as e:
+                    self.log.error("Error while converting '%s'", import_filename,
+                          exc_info=True)
+                    self.exit(1)
+                
+                try:
+                    with file(notebook_filename, "w+") as fp:
+                        # TODO: find this in settings
+                        nbformat.write(nb, fp, version=4)
+                except Exception as e:
+                    self.log.error("Error while writing '%s'", notebook_filename,
+                          exc_info=True)
+                    self.exit(1)
+                
+            
             # Get a unique key for the notebook and set it in the resources object.
             basename = os.path.basename(notebook_filename)
             notebook_name = basename[:basename.rfind('.')]
