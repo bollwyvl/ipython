@@ -285,15 +285,18 @@ class NbConvertApp(BaseIPythonApplication):
             """)
             self.exit(1)
         
-        importer = importer_map[self.import_format](config=self.config)
         exporter = exporter_map[self.export_format](config=self.config)
+
+        importer = None
+        if self.import_format:
+            importer = importer_map[self.import_format](config=self.config)
 
         for notebook_filename in self.notebooks:
             self.log.info("Converting %s %s to %s",
                 self.import_format, notebook_filename, self.export_format
             )
             
-            if self.import_format:
+            if importer:
                 import_filename = notebook_filename
                 notebook_filename = import_filename + ".ipynb"
                 resources = {}
