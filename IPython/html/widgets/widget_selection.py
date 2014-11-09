@@ -114,6 +114,51 @@ class _Selection(DOMWidget):
                 self.value_lock.release()
 
 
+class _MultipleSelection(_Selection):
+    value_name = List(help="The names of the selected values", sync=True)
+
+    def _value_in_values(self):
+        # ensure that the chosen value is one of the choices
+        if self.values:
+            old_value = self.value or []
+            new_value = []
+            for value in old_value:
+                if value in self.values.values():
+                    new_value.append(value)
+            if new_value:
+                self.value = new_value
+            else:
+                self.value = [next(iter(self.values.values()))]
+
+    def _value_changed(self, name, old, new):
+        """Called when value has been changed"""
+        if self.value_lock.acquire(False):
+            try:
+                names = []
+                # Reverse dictionary lookup for the value name
+                for k, v in self.values.items():
+                    if v in new:
+                        # set the selected value name
+                        names.append(k)
+                if names:
+                    self.value_name = names
+                else:
+                    # undo the change, and raise KeyError
+                    self.value = old
+                    raise KeyError(new)
+            finally:
+                self.value_lock.release()
+
+    def _value_name_changed(self, name, old, new):
+        """Called when the value name has been changed (typically by the
+        frontend)."""
+        if self.value_lock.acquire(False):
+            try:
+                self.value = [self.values[name] for name in new]
+            finally:
+                self.value_lock.release()
+
+
 @register('IPython.ToggleButtons')
 class ToggleButtons(_Selection):
     """Group of toggle buttons that represent an enumeration.  Only one toggle
@@ -147,6 +192,12 @@ class RadioButtons(_Selection):
 class Select(_Selection):
     """Listbox that only allows one item to be selected at any given time."""
     _view_name = Unicode('SelectView', sync=True)
+
+
+@register('IPython.SelectMultiple')
+class SelectMultiple(_MultipleSelection):
+    """Listbox that allows many items to be selected at any given time."""
+    _view_name = Unicode('SelectMultipleView', sync=True)
 
 
 # Remove in IPython 4.0

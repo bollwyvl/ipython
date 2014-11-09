@@ -5,8 +5,9 @@ define([
     "widgets/js/widget",
     "base/js/utils",
     "jquery",
+    "underscore",
     "bootstrap",
-], function(widget, utils, $){
+], function(widget, utils, $, _){
 
     var DropdownView = widget.DOMWidgetView.extend({
         render : function(){
@@ -399,7 +400,7 @@ define([
             this.touch();
         },    
     });
-    
+
 
     var SelectView = widget.DOMWidgetView.extend({    
         render : function(){
@@ -495,10 +496,32 @@ define([
         },    
     });
     
+
+    var SelectMultipleView = SelectView.extend({
+        render : function(){
+            SelectMultipleView.__super__.render.apply(this);
+            this.$listbox.attr('multiple', true);
+            return this;
+        },
+
+        handle_click: function (e) {
+            // Handle when a value is clicked.
+
+            // Calling model.set will trigger all of the other views of the
+            // model to update.
+            this.model.set('value_name',
+                (this.$listbox.val() || []).slice(),
+                {updated_view: this});
+            this.touch();
+        },
+    });
+
+
     return {
         'DropdownView': DropdownView,
         'RadioButtonsView': RadioButtonsView,
         'ToggleButtonsView': ToggleButtonsView,
         'SelectView': SelectView,
+        'SelectMultipleView': SelectMultipleView,
     };
 });
