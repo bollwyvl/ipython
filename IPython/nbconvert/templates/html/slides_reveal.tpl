@@ -56,7 +56,7 @@
 
 <!-- General and theme style sheets -->
 <link rel="stylesheet" href="{{resources.reveal.url_prefix}}/css/reveal.css">
-<link rel="stylesheet" href="{{resources.reveal.url_prefix}}/css/theme/simple.css" id="theme">
+<link rel="stylesheet" href="{{resources.reveal.url_prefix}}/css/theme/{{nb.metadata.slideshow.theme}}.css" id="theme">
 
 <!-- If the query includes 'print-pdf', include the PDF print sheet -->
 <script>
@@ -170,12 +170,16 @@ div.output_prompt {
 
 // Full list of configuration options available here: https://github.com/hakimel/reveal.js#configuration
 Reveal.initialize({
-controls: true,
-progress: true,
-history: true,
-
-theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
-transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/none
+{% for key, value in nb.metadata.slideshow.items() %}{{key}}: {% if value == False -%}
+        false
+    {%- elif value == True -%}
+        true
+    {%- elif value is number -%}
+        {{value}}
+    {%- else -%}
+        "{{value}}"
+    {%- endif %},
+{% endfor %}
 
 // Optional libraries used to extend on reveal.js
 dependencies: [

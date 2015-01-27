@@ -13,7 +13,7 @@ class RevealHelpPreprocessor(Preprocessor):
                          help="""The URL prefix for reveal.js.
                          This can be a a relative URL for a local copy of reveal.js,
                          or point to a CDN.
-                         
+
                          For speaker notes to work, a local reveal.js prefix must be used.
                          """
     )
@@ -58,5 +58,8 @@ class RevealHelpPreprocessor(Preprocessor):
 
         if not isinstance(resources['reveal'], dict):
             resources['reveal'] = {}
-        resources['reveal']['url_prefix'] = self.url_prefix
+        resources['reveal']['url_prefix'] = resources['reveal'].get(
+            'url_prefix',
+            self.url_prefix
+        )
         return nb, resources

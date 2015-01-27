@@ -18,6 +18,8 @@ from IPython.nbformat import from_dict
 from IPython.utils.py3compat import cast_bytes
 from IPython.utils import text
 
+from IPython.nbconvert.postprocessors.serve import ServePostProcessor
+
 def find_resource_files(output_files_dir):
     files = []
     for dirpath, dirnames, filenames in os.walk(output_files_dir):
@@ -60,13 +62,13 @@ def get_exporter(format, **kwargs):
         from IPython.nbconvert.exporters.export import exporter_map
     except ImportError as e:
         raise web.HTTPError(500, "Could not import nbconvert: %s" % e)
-    
+
     try:
         Exporter = exporter_map[format]
     except KeyError:
         # should this be 400?
         raise web.HTTPError(404, u"No exporter for format: %s" % format)
-    
+
     try:
         return Exporter(**kwargs)
     except Exception as e:
@@ -75,12 +77,12 @@ def get_exporter(format, **kwargs):
 class NbconvertFileHandler(IPythonHandler):
 
     SUPPORTED_METHODS = ('GET',)
-    
+
     @web.authenticated
     def get(self, format, path):
-        
+
         exporter = get_exporter(format, config=self.config, log=self.log)
-        
+
         path = path.strip('/')
         model = self.contents_manager.get(path=path)
         name = model['name']
@@ -93,6 +95,9 @@ class NbconvertFileHandler(IPythonHandler):
             output, resources = exporter.from_notebook_node(
                 model['content'],
                 resources={
+                    "reveal": {
+                        "url_prefix": ServePostProcessor().reveal_cdn
+                    },
                     "metadata": {
                         "name": name[:name.rfind('.')],
                         "modified_date": (model['last_modified']
@@ -125,11 +130,11 @@ class NbconvertPostHandler(IPythonHandler):
     @web.authenticated
     def post(self, format):
         exporter = get_exporter(format, config=self.config)
-        
+
         model = self.get_json_body()
         name = model.get('name', 'notebook.ipynb')
         nbnode = from_dict(model['content'])
-        
+
         try:
             output, resources = exporter.from_notebook_node(nbnode)
         except Exception as e:
